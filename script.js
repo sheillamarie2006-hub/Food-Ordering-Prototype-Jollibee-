@@ -1,7 +1,7 @@
 let cart = [];
 let currentUser = null;
 
-// Menu Data Store
+
 const menuData = {
     all: [
         { name: '1-pc Chickenjoy with Rice', price: 95, desc: 'Crispylicious, Juicypolicious 1-pc Chickenjoy served with warm rice and gravy.', icon: '🍗' },
@@ -32,7 +32,6 @@ const menuData = {
     ]
 };
 
-// --- Menu Functions ---
 function renderMenu(categoryKey) {
     const menuGrid = document.getElementById('menu-grid');
     const items = menuData[categoryKey] || menuData['all'];
@@ -72,7 +71,7 @@ function showCategory(categoryKey, btnElement) {
     renderMenu(categoryKey);
 }
 
-// --- Cart Functions ---
+
 function toggleCart() {
     document.getElementById('cart-drawer').classList.toggle('open');
     document.getElementById('cart-overlay').classList.toggle('open');
@@ -139,7 +138,7 @@ function processCheckout() {
     toggleCart();
 }
 
-// --- Authentication System ---
+
 function openAuthModal(defaultTab = 'login') {
     switchTab(defaultTab);
     document.getElementById('auth-overlay').classList.add('open');
@@ -217,7 +216,7 @@ function updateAuthUI() {
     }
 }
 
-// Initial setup
+
 renderMenu('all');
 
 

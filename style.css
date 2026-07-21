@@ -20,7 +20,7 @@ body {
     padding-bottom: 50px;
 }
 
-/* --- Header / Navigation --- */
+
 header {
     background-color: var(--jollibee-red);
     color: white;
@@ -130,14 +130,14 @@ header {
     font-size: 0.75rem;
 }
 
-/* --- Layout Container --- */
+
 .container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1.5rem;
 }
 
-/* --- Category Pills --- */
+
 .categories {
     display: flex;
     gap: 12px;
@@ -168,7 +168,7 @@ header {
     border-color: var(--jollibee-red);
 }
 
-/* --- Menu Grid --- */
+
 .section-title {
     font-size: 1.5rem;
     font-weight: 700;

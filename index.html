@@ -1,137 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jollibee - Food Ordering Prototype</title>
-  
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-   
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Senior Citizen Assistance Platform</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-   
-    <header>
-        <div class="brand" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-            <div class="brand-logo">J</div>
-            <div class="brand-name">Jobee</div>
-        </div>
+<!-- LOGIN -->
+<section id="login" class="hide">
+ <main style="max-width:480px">
+  <h2 style="text-align:center;margin-top:40px">Senior Citizen<br>Assistance Platform</h2>
+  <div class="card">
+   <label for="em">Email</label><input id="em" type="email" value="william@example.com">
+   <label for="pw">Password</label><input id="pw" type="password" value="password">
+   <p style="margin-top:18px"><button class="btn" style="width:100%" onclick="doLogin()">Log In</button></p>
+   <p class="muted" style="text-align:center">Demo only: any email and password works.</p>
+  </div>
+ </main>
+</section>
 
-        <div class="nav-actions">
-            
-            <button class="auth-btn" id="login-nav-btn" onclick="openAuthModal('login')">Sign In / Register</button>
-            <div class="user-profile" id="user-profile-nav">
-                <span id="user-display-name">Hi, Guest</span>
-                <span class="logout-link" onclick="logoutUser()">(Logout)</span>
-            </div>
+<!-- APP -->
+<section id="app" class="hide">
+ <header><h1>🏠 Senior Citizen Assistance</h1><button class="me" id="hello" onclick="go('Profile')" aria-label="Open my profile"></button><button class="btn l" style="color:#fff;border-color:#fff" onclick="logout()">Log Out</button></header>
+ <nav id="nav"></nav>
+ <main id="view"></main>
+</section>
 
-            
-            <button class="cart-btn" onclick="toggleCart()">
-                🛒 View Order
-                <span class="cart-badge" id="cart-count">0</span>
-            </button>
-        </div>
-    </header>
+<div class="modal" id="modal"><div class="box" id="box"></div></div>
 
-    
-    <div class="container">
-        
-        <div class="categories">
-            <button class="category-btn active" onclick="showCategory('all', this)">All Items</button>
-            <button class="category-btn" onclick="showCategory('chickenjoy', this)">Chickenjoy</button>
-            <button class="category-btn" onclick="showCategory('burgers', this)">Burgers</button>
-            <button class="category-btn" onclick="showCategory('spaghetti', this)">Jolly Spaghetti</button>
-            <button class="category-btn" onclick="showCategory('desserts', this)">Desserts & Drinks</button>
-        </div>
-
-        <h2 class="section-title" id="section-heading">Bestsellers</h2>
-
-        
-        <div class="menu-grid" id="menu-grid"></div>
-    </div>
-
-    
-    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
-    
-    <div class="cart-drawer" id="cart-drawer">
-        <div class="cart-header">
-            <h3>My Order</h3>
-            <button class="close-btn" onclick="toggleCart()">&times;</button>
-        </div>
-        
-        <div class="cart-body" id="cart-body">
-            <p class="empty-cart-msg">Your cart is empty.</p>
-        </div>
-
-        <div class="cart-footer">
-            <div class="total-row">
-                <span>Total:</span>
-                <span id="cart-total">₱0.00</span>
-            </div>
-            <button class="checkout-btn" onclick="processCheckout()">Place Order</button>
-        </div>
-    </div>
-
-    
-    <div class="auth-overlay" id="auth-overlay">
-        <div class="auth-modal">
-            <div class="auth-header">
-                <button class="auth-close-btn" onclick="closeAuthModal()">&times;</button>
-                <div class="auth-header-logo">J</div>
-                <h3 id="auth-title">Welcome to Jollibee</h3>
-                <p id="auth-subtitle">Sign in to start ordering your favorites!</p>
-            </div>
-
-            
-            <div class="auth-tabs">
-                <button class="tab-btn active" id="tab-login-btn" onclick="switchTab('login')">Sign In</button>
-                <button class="tab-btn" id="tab-register-btn" onclick="switchTab('register')">Create Account</button>
-            </div>
-
-            <div class="auth-body">
-                
-                <form id="login-form" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label for="login-email">Email or Mobile Number</label>
-                        <input type="text" id="login-email" class="form-control" placeholder="e.g. user@domain.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="submit-auth-btn">Sign In</button>
-                    <p class="auth-footer-note">Forgot your password? <a href="#" onclick="alert('Password reset link sent to your registered email.')">Reset here</a></p>
-                </form>
-
-                
-                <form id="register-form" onsubmit="handleRegister(event)" style="display: none;">
-                    <div class="form-group">
-                        <label for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" class="form-control" placeholder="e.g. Sheilla Lañojan" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-email">Email Address</label>
-                        <input type="email" id="reg-email" class="form-control" placeholder="name@domain.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-mobile">Mobile Number</label>
-                        <input type="tel" id="reg-mobile" class="form-control" placeholder="09123456789" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Create Password</label>
-                        <input type="password" id="reg-password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
-                    </div>
-                    <button type="submit" class="submit-auth-btn">Register & Continue</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
-
-
-

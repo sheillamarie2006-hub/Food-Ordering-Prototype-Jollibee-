@@ -3,10 +3,10 @@ const CARE=[{id:1,n:"Laura Martinez",sk:"Cleaning & housekeeping",r:4,c:23,p:20,
 const SLOTS=["9:00 AM","11:00 AM","1:00 PM","2:00 PM","3:00 PM"];
 const STORE=[["Rice (5 kg)",12],["Fresh vegetables",8],["Milk (1 L)",2],["Bread",3],["Eggs (dozen)",4]];
 const ACTS=[["Morning Walk Group","Mon, 8:00 AM"],["Bingo Afternoon","Wed, 3:00 PM"],["Coffee & Chat (Online)","Fri, 10:00 AM"],["Garden Club","Sat, 9:00 AM"]];
-const S={user:null,tab:"Home",appts:[],orders:[],n:0,profile:{username:"",name:"",email:"",phone:"",birth:"",address:"",ename:"",ephone:"",photo:""},bookings:[],doc:0,care:null,date:nextWed(),slot:"2:00 PM",hours:3,cart:{},joined:{}};
+const S={user:null,tab:"Home",appts:[],orders:[],n:0,menu:null,seen:0,profile:{username:"",name:"",email:"",phone:"",birth:"",address:"",ename:"",ephone:"",photo:""},bookings:[],doc:0,care:null,date:nextWed(),slot:"2:00 PM",hours:3,cart:{},joined:{}};
 const KEY="senior_platform_v1";
-function save(){try{localStorage.setItem(KEY,JSON.stringify({appts:S.appts,orders:S.orders,bookings:S.bookings,joined:S.joined,n:S.n,profile:S.profile}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||"null");if(d)Object.assign(S,{appts:d.appts||[],orders:d.orders||[],bookings:d.bookings||[],joined:d.joined||{},n:d.n||0});if(d&&d.profile)Object.assign(S.profile,d.profile)}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({appts:S.appts,orders:S.orders,bookings:S.bookings,joined:S.joined,n:S.n,seen:S.seen,profile:S.profile}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||"null");if(d)Object.assign(S,{appts:d.appts||[],orders:d.orders||[],bookings:d.bookings||[],joined:d.joined||{},n:d.n||0,seen:d.seen||0});if(d&&d.profile)Object.assign(S.profile,d.profile)}catch(e){}}
 load();
 const $=s=>document.querySelector(s);
 function nextWed(){const d=new Date();d.setDate(d.getDate()+((3-d.getDay()+7)%7||7));return d.toISOString().slice(0,10)}
@@ -22,17 +22,22 @@ function doLogin(){
  if(!S.profile.email)S.profile.email=em;
  S.user=S.profile.username;show();
 }
-function logout(){S.user=null;show()}
+function logout(){S.menu=null;S.user=null;show()}
 function show(){
  save();
  $("#login").classList.toggle("hide",!!S.user);$("#app").classList.toggle("hide",!S.user);
  if(!S.user)return;
- $("#hello").innerHTML=avatar("avs")+"<span>"+esc(S.user)+"</span>";
- $("#nav").innerHTML=["Home","Telemedicine","Grocery Delivery","Caregiver Help","Social Activities","My Schedule","Profile"].map(t=>`<button class="${t==S.tab?"on":""}" onclick="go('${t}')">${t}</button>`).join("");
+ $("#hello").innerHTML=avatar("avs");
+ $("#hi").textContent="Hello, "+S.user;
+ const nl=notifs().length;if(S.seen>nl)S.seen=nl;
+ $("#notN").textContent=nl-S.seen>0?nl-S.seen:"";
+ const cc=Object.values(S.cart).reduce((a,b)=>a+b,0);$("#cartN").textContent=cc||"";
+ renderDrop();
+ $("#nav").innerHTML=["Home","Telemedicine","Grocery Delivery","Caregiver Help","Social Activities"].map(t=>`<button class="${t==S.tab?"on":""}" onclick="go('${t}')">${t}</button>`).join("");
  const v={Home,Telemedicine,"Grocery Delivery":Grocery,"Caregiver Help":Caregiver,"Social Activities":Social,"My Schedule":Schedule,Profile}[S.tab];
  $("#view").innerHTML=v();
 }
-function go(t){S.tab=t;show();scrollTo(0,0)}
+function go(t){S.menu=null;S.tab=t;show();scrollTo(0,0)}
 
 function Home(){
  const up=S.appts[0]||{doc:"Dr. Anna Cruz",when:"Today, 3:00 PM"};
@@ -240,6 +245,35 @@ function upPhoto(inp){
  };
  r.readAsDataURL(file);
 }
+
+
+/* ---------- Top bar: search, notifications, menus ---------- */
+const KEYS={"Telemedicine":["doctor","telemedicine","appointment","health","medicine","video"],"Grocery Delivery":["grocery","food","rice","milk","bread","eggs","vegetables","delivery","cart"],"Caregiver Help":["caregiver","care","cleaning","laura","mark","companion","housekeeping"],"Social Activities":["social","activity","activities","event","bingo","walk","garden","coffee"],"My Schedule":["schedule","booking","cancel","recent"],"Profile":["profile","account","photo","username","settings"]};
+function doSearch(){
+ const q=$("#q").value.trim().toLowerCase();if(!q)return;
+ const hit=Object.keys(KEYS).find(t=>t.toLowerCase().includes(q)||KEYS[t].some(k=>k.includes(q)||q.includes(k)));
+ if(hit){$("#q").value="";go(hit);scrollTo(0,0)}
+ else modal(`<h3>No results</h3><p>We could not find a service for "${esc(q)}". Try Telemedicine, Grocery, Caregiver or Social Activities.</p><div class="stack"><button class="btn" onclick="closeM()">OK</button></div>`);
+}
+function notifs(){
+ return [{icon:"🩺",title:"Reminder: Dr. Anna Cruz",sub:"Today, 3:00 PM"}].concat(items());
+}
+function toggleMenu(k){
+ S.menu=S.menu==k?null:k;
+ if(S.menu=="notif"){S.seen=notifs().length;$("#notN").textContent=""}
+ renderDrop();
+}
+function menuGo(t){S.menu=null;go(t)}
+function renderDrop(){
+ const d=$("#drop"),m=S.menu;
+ d.className="drop"+(m?" show "+(m=="side"?"left":"right"):"");
+ if(!m){d.innerHTML="";return}
+ if(m=="side")d.innerHTML=[["🏠","Home"],["🩺","Telemedicine"],["🛍️","Grocery Delivery"],["🤝","Caregiver Help"],["🎉","Social Activities"],["📅","My Schedule"]].map(([i,t])=>`<button class="mi" onclick="menuGo('${t}')">${i} ${t}</button>`).join("");
+ if(m=="acct")d.innerHTML=`<button class="mi" onclick="menuGo('Profile')">👤 My Profile</button><button class="mi" onclick="menuGo('My Schedule')">📅 My Schedule</button><button class="mi out" onclick="logout()">🚪 Log Out</button>`;
+ if(m=="notif")d.innerHTML=`<div class="nh">Notifications</div>`+notifs().map(n=>`<div class="nt">${n.icon} <b>${n.type?n.type+": ":""}${n.title}</b><div class="muted">${n.sub}</div></div>`).join("")+`<button class="mi" onclick="menuGo('My Schedule')">View My Schedule</button>`;
+}
+document.addEventListener("click",e=>{if(S.menu&&!e.target.closest(".topbar")){S.menu=null;renderDrop()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.menu){S.menu=null;renderDrop()}});
 
 $("#modal").addEventListener("click",e=>{if(e.target.id=="modal")closeM()});
 show();

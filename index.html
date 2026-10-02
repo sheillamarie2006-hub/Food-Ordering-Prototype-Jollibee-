@@ -23,7 +23,17 @@
 
 <!-- APP -->
 <section id="app" class="hide">
- <header><h1>🏠 Senior Citizen Assistance</h1><button class="me" id="hello" onclick="go('Profile')" aria-label="Open my profile"></button><button class="btn l" style="color:#fff;border-color:#fff" onclick="logout()">Log Out</button></header>
+ <div class="topbar">
+  <button class="ic" onclick="toggleMenu('side')" aria-label="Open main menu">☰</button>
+  <input id="q" class="search" type="search" list="svc" placeholder="Search for services..." aria-label="Search for services" onkeydown="if(event.key==='Enter')doSearch()">
+  <datalist id="svc"><option value="Telemedicine"><option value="Grocery Delivery"><option value="Caregiver Help"><option value="Social Activities"><option value="My Schedule"><option value="Profile"></datalist>
+  <button class="ic" onclick="go('Grocery Delivery')" aria-label="Cart">🛒<span class="badge" id="cartN"></span></button>
+  <button class="ic" onclick="toggleMenu('notif')" aria-label="Notifications">🔔<span class="badge" id="notN"></span></button>
+  <button class="ic prof" id="hello" onclick="go('Profile')" aria-label="Open my profile"></button>
+  <button class="ic" onclick="toggleMenu('acct')" aria-label="Account menu">≡</button>
+  <div class="drop" id="drop"></div>
+ </div>
+ <header><h1>🏠 Senior Citizen Assistance</h1><span id="hi"></span></header>
  <nav id="nav"></nav>
  <main id="view"></main>
 </section>
